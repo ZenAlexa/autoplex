@@ -1,6 +1,6 @@
 # Production Learnings
 
-Lessons from running this system on a real project (XAgent Design System Unification: 16 tasks, 5 phases, ~5 hours total execution).
+Lessons from running this system on real projects (largest run: 16 tasks, 5 phases, ~5 hours total execution, zero human intervention).
 
 Read this file when debugging failures or when a user reports an issue that isn't covered by SKILL.md's "Common Issues" section.
 

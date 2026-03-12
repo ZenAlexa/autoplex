@@ -16,12 +16,12 @@ Autoplex doesn't operate in isolation. It's the execution layer of a broader wor
 
 Before autoplex can run, you need a structured task plan. These tools create it:
 
-| Tool                                                                         | What It Does                                                                        | How Autoplex Uses It                                      |
-| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| **[planning-with-files](https://github.com/OthmanAdi/planning-with-files)**  | Creates `task_plan.md` + `progress.md` + `findings.md` in `.claude/plans/sessions/` | Autoplex reads these files as context for each task       |
-| **superpowers:writing-plans**                                                | Skill that guides Claude through structured plan creation                           | Produces the task_plan.md that autoplex consumes          |
-| **superpowers:brainstorming**                                                | Pre-planning creative exploration                                                   | Informs plan scope and approach before writing            |
-| **Sequential Thinking MCP** (`mcp__sequential-thinking__sequentialthinking`) | Step-by-step reasoning for complex architecture decisions                           | Used during plan creation for multi-file design decisions |
+| Tool                                                                                | What It Does                                                                        | How Autoplex Uses It                                      |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **[planning-with-files](https://github.com/OthmanAdi/planning-with-files)**         | Creates `task_plan.md` + `progress.md` + `findings.md` in `.claude/plans/sessions/` | Autoplex reads these files as context for each task       |
+| **[superpowers](https://github.com/obra/superpowers):writing-plans**                | Skill that guides Claude through structured plan creation                           | Produces the task_plan.md that autoplex consumes          |
+| **[superpowers](https://github.com/obra/superpowers):brainstorming**                | Pre-planning creative exploration                                                   | Informs plan scope and approach before writing            |
+| **[Sequential Thinking MCP](https://github.com/arben-adm/mcp-sequential-thinking)** | Step-by-step reasoning for complex architecture decisions                           | Used during plan creation for multi-file design decisions |
 
 ### Phase 2: Execution (autoplex itself)
 
@@ -37,12 +37,12 @@ During execution, each headless `claude -p` session uses these tools internally:
 
 #### MCP Servers (used for cross-verification)
 
-| MCP Server   | Tool ID                                         | Role in Autoplex                                                                                                                                                                                              |
-| ------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Codex**    | `mcp__codex__codex`                             | Verify type safety, import consistency, protocol correctness. Used in Step 5 (per-task) and Phase Review Step 3.                                                                                              |
-| **GemSuite** | `mcp__gemsuite-mcp__gem_process` / `gem_reason` | Review component quality, UX patterns, edge cases. `gem_process` for per-task review, `gem_reason` for deep phase review. **Note**: `file_path` param fails for `.ts`/`.tsx` — always pass `content` instead. |
-| **Context7** | `mcp__context7__query-docs`                     | Look up library API docs when implementation touches framework APIs. Not used by default in autoplex prompts but available.                                                                                   |
-| **Exa**      | `mcp__exa__web_search_exa`                      | Search for current best practices. Used in findings.md research phase (upstream).                                                                                                                             |
+| MCP Server                                              | Tool ID                                         | Role in Autoplex                                                                                                                                                                                              | Link                                                 |
+| ------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Codex**                                               | `mcp__codex__codex`                             | Verify type safety, import consistency, protocol correctness. Used in Step 5 (per-task) and Phase Review Step 3.                                                                                              | —                                                    |
+| **[GemSuite](https://github.com/PV-Bhat/gemsuite-mcp)** | `mcp__gemsuite-mcp__gem_process` / `gem_reason` | Review component quality, UX patterns, edge cases. `gem_process` for per-task review, `gem_reason` for deep phase review. **Note**: `file_path` param fails for `.ts`/`.tsx` — always pass `content` instead. | [GitHub](https://github.com/PV-Bhat/gemsuite-mcp)    |
+| **[Context7](https://github.com/upstash/context7)**     | `mcp__context7__query-docs`                     | Look up library API docs when implementation touches framework APIs. Not used by default in autoplex prompts but available.                                                                                   | [GitHub](https://github.com/upstash/context7)        |
+| **[Exa](https://github.com/exa-labs/exa-mcp-server)**   | `mcp__exa__web_search_exa`                      | Search for current best practices. Used in findings.md research phase (upstream).                                                                                                                             | [GitHub](https://github.com/exa-labs/exa-mcp-server) |
 
 #### Companion Skills (used alongside autoplex)
 
@@ -96,12 +96,12 @@ The default commit format follows Conventional Commits:
 <type>(<scope>): <task_id> — <description>
 ```
 
-Examples from production:
+Examples:
 
 ```
-refactor(ui): T6 — simplify radius/shadow syntax across codebase
-refactor(ui): T14 — migrate pages/settings/ to semantic design tokens
-fix(ui): Phase 4 review — missed migration, lint compliance, token consistency
+refactor(auth): T3 — extract JWT validation into shared middleware
+feat(api): T7 — add pagination to /users endpoint
+fix(ui): Phase 2 review — missed import, lint compliance, type consistency
 ```
 
 ### Agent Output Gate

@@ -1,13 +1,17 @@
 ---
 name: autoplex
 description: >
-  Autonomously execute multi-phase task plans via shell scripts that invoke
-  Claude Code in headless mode (claude -p). Each task runs in a fresh session
-  with full methodology: context loading, parallel research subagents,
-  implementation, verification, cross-verification, commit, and progress update.
-  Phase-end cross-review audits gate quality. Failure-type-aware retry
-  (context overflow, rate limit, budget exceeded) ensures robustness. Runs in
-  tmux for background execution.
+  Production-grade autonomous plan execution engine for Claude Code. NOT a
+  simple ralph-style while loop — autoplex is an execution system with five
+  unique mechanisms: (1) failure-type-aware adaptive retry that rewrites prompts
+  based on 5 detected failure modes (context overflow, rate limit, budget,
+  API error, generic), (2) per-task 6-step methodology injection (context load,
+  parallel research subagents, implementation, verification, cross-verification,
+  commit) embedded in every prompt, (3) phase-level cross-review quality gates
+  via independent claude -p sessions with multi-agent verification, (4)
+  crash-resumable progress tracking via progress.md ledger, (5) per-task budget
+  allocation with dynamic +$3/+$5 adjustment on retry. Each task runs in a
+  completely fresh headless session — zero context leakage between tasks.
   Use when: (1) user has a task_plan.md with phased tasks and wants to execute
   them autonomously, (2) user says "run the plan", "execute tasks", "automate
   the phases", "run overnight", or similar, (3) user wants to batch-execute

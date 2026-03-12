@@ -1,8 +1,10 @@
 # Production Learnings
 
-Lessons from running this system on real projects (largest run: 16 tasks, 5 phases, ~5 hours total execution, zero human intervention).
+Lessons from running this system on real projects (largest run: 20+ tasks, 5 phases, ~5 hours total execution, zero human intervention). Battle-tested across multiple codebases with complex multi-file migrations, design system unifications, and feature implementations.
 
 Read this file when debugging failures or when a user reports an issue that isn't covered by SKILL.md's "Common Issues" section.
+
+> **Context**: These learnings are what differentiate autoplex from simpler tools like ralph (87-line while loop) or continuous-claude (PR-per-iteration). Every item below was discovered through a real production failure that simpler tools would not have survived.
 
 ## Table of Contents
 

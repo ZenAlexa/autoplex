@@ -62,6 +62,95 @@ During execution, each headless `claude -p` session uses these tools internally:
 | **code-review:code-review**            | PR-level code review                             |
 | **pr-review-toolkit:review-pr**        | Multi-agent PR review with specialized reviewers |
 
+---
+
+## Competitive Landscape
+
+### Why This Category Exists
+
+The "autonomous plan execution" pattern emerged from a real need: developers create structured plans (PRDs, task lists, migration plans) but executing them manually across 10-20+ tasks is tedious. The solution is to loop `claude -p` with some form of progress tracking.
+
+Every tool in this space answers the same question differently: **how much intelligence should live in the orchestrator vs. inside Claude?**
+
+### The Spectrum
+
+```
+← Less orchestrator intelligence                    More orchestrator intelligence →
+
+ralph          continuous-claude     ralphex          autoplex          ruflo/claude-flow
+(87 lines)     (PR-per-iteration)    (Go pipeline)    (adaptive retry)  (enterprise swarm)
+```
+
+### Tool Categories
+
+#### Simple Loops ("Ralph Pattern")
+
+These tools run `claude -p` in a loop with minimal orchestration. Intelligence lives inside Claude.
+
+| Tool                                                                     | Stars | Key Trait                                          | Limitation                                                  |
+| ------------------------------------------------------------------------ | ----- | -------------------------------------------------- | ----------------------------------------------------------- |
+| [ralph](https://github.com/snarktank/ralph)                              | 12.6k | Original pioneer, prd.json-driven                  | No failure detection, no phases, no retry adaptation        |
+| [ralph-claude-code](https://github.com/frankbria/ralph-claude-code)      | 5.6k  | Circuit breaker (5 patterns), rate-limit awareness | Still single-loop, no multi-phase, no methodology injection |
+| [continuous-claude](https://github.com/AnandChowdhary/continuous-claude) | 1.25k | PR-per-iteration, CI quality gate                  | No failure-type retry, no phases, loses WIP on crash        |
+| [claude-pipeline](https://github.com/aaddrick/claude-pipeline)           | 93    | Drop-in `.claude/` directory                       | Limited orchestration logic                                 |
+| [plangate](https://github.com/bishnubista/plangate)                      | 1     | PLAN.md-driven, build+review gates                 | Very early stage                                            |
+
+#### Structured Executors
+
+These add real orchestration: phases, review, crash recovery.
+
+| Tool                                                                   | Stars | Key Trait                                                            | Limitation                                                                        |
+| ---------------------------------------------------------------------- | ----- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| [ralphex](https://github.com/umputun/ralphex)                          | 726   | Go binary, 4-stage pipeline, Codex cross-review, stalemate detection | No failure-type retry, no per-task budget, no methodology injection               |
+| [orchestration](https://github.com/lebed2045/orchestration)            | —     | Best quality gates (Gemini + isolated Claude), TDD enforcement       | **Single session** — crash = restart. No failure recovery. Context overflow risk. |
+| [claude-orchestrator](https://github.com/reshashi/claude-orchestrator) | 64    | Full PR lifecycle automation, stall detection                        | Focused on delivery pipeline, not plan execution                                  |
+| [orchestrator](https://github.com/gabrielkoerich/orchestrator)         | 4     | GitHub Issues as task backend, multi-CLI support                     | Early stage, limited quality gates                                                |
+
+#### Enterprise Platforms
+
+These are full multi-agent frameworks — different scale and complexity target.
+
+| Tool                                                                   | Stars | Key Trait                                                        | Trade-off                                     |
+| ---------------------------------------------------------------------- | ----- | ---------------------------------------------------------------- | --------------------------------------------- |
+| [ruflo/claude-flow](https://github.com/ruvnet/ruflo)                   | 20.6k | 60+ specialized agents, vector memory, swarm topologies          | Massive infrastructure, enterprise complexity |
+| [BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)            | 40k   | Complete agile AI methodology, 12+ agent roles                   | Methodology framework, not an executable tool |
+| [agent-orchestrator](https://github.com/ComposioHQ/agent-orchestrator) | 4.1k  | Parallel git worktrees, real-time dashboard, plugin architecture | Requires Composio ecosystem                   |
+| [OpenSwarm](https://github.com/Intrect-io/OpenSwarm)                   | 211   | Linear issues + Discord + LanceDB vector memory                  | Tied to specific project management tools     |
+
+#### SDK/Programmatic Approach
+
+The alternative to shell scripts — using the Claude Agent SDK for programmatic control.
+
+| Approach                                                                  | Strengths                                                 | Weaknesses                                                         |
+| ------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------ |
+| **[Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview)** | Structured I/O, native subagents, hooks, `max_budget_usd` | Proprietary license, 190MB Go binary, 6s cold start, model lock-in |
+| **Shell scripts (autoplex)**                                              | Zero deps, full transparency, MIT license, battle-tested  | No structured streaming, manual timeout/budget implementation      |
+
+See README.md's [Architectural Note](README.md#architectural-note-why-shell-scripts-not-agent-sdk) for the full rationale.
+
+### Where Autoplex Fits
+
+Autoplex occupies a unique position: **structured executor complexity with simple loop accessibility**.
+
+It's the only tool that combines all five of these mechanisms:
+
+1. **Failure-type-aware adaptive retry** (5 types × different prompt adaptations)
+2. **Per-task methodology injection** (6-step methodology embedded in every prompt)
+3. **Phase-level cross-review quality gates** (independent session + multi-agent)
+4. **Crash-resumable progress tracking** (progress.md ledger)
+5. **Per-task budget allocation with dynamic adjustment** (+$3/+$5 on retry)
+
+No other tool implements all five. ralphex comes closest (has #3 and #4) but lacks #1, #2, and #5.
+
+### What Autoplex Is NOT
+
+- **Not a multi-agent swarm** — tasks run sequentially (parallelism is within each task via subagents)
+- **Not an IDE plugin** — it's a CLI skill that generates and runs shell scripts
+- **Not a framework** — you can't build other tools on top of it (use Agent SDK for that)
+- **Not for single tasks** — use regular Claude Code for one-off work
+
+---
+
 ## Key Patterns Referenced
 
 ### planning-with-files Convention

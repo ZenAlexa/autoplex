@@ -1,0 +1,24 @@
+{
+  "name": "autoplex",
+  "version": "1.0.0",
+  "description": "Autonomous multi-phase plan execution for Claude Code. Run complex task plans unattended with per-task retry, phase-level quality gates, and tmux-based monitoring.",
+  "author": "ZenAlexa",
+  "license": "MIT",
+  "homepage": "https://github.com/ZenAlexa/autoplex",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZenAlexa/autoplex.git"
+  },
+  "keywords": [
+    "autonomous-execution",
+    "plan-execution",
+    "headless",
+    "claude-p",
+    "tmux",
+    "multi-phase",
+    "quality-gates",
+    "retry-logic",
+    "batch-execution",
+    "unattended"
+  ]
+}
